@@ -7,6 +7,7 @@ import { TRPCReactProvider } from "@/trpc/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 export const metadata: Metadata = {
 	title: "Wisdom Education Platform",
@@ -33,6 +34,7 @@ export default function RootLayout({
 						disableTransitionOnChange
 					>
 						<TooltipProvider>
+							<ModeToggle />
 							{children}
 							<Toaster />
 						</TooltipProvider>
