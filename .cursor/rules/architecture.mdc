@@ -32,7 +32,7 @@ Put all feature-specific code here. Each feature folder typically contains:
 
 | Subfolder/File | Purpose | Example |
 |---------------|---------|---------|
-| `components/` | UI components used only in this feature | `CourseCard.tsx`, `LessonList.tsx` |
+| `components/` | UI components used only in this feature | `course-card.tsx`, `lesson-list.tsx` |
 | `hooks/` | Custom hooks for this feature's logic | `useCourseProgress.ts` |
 | `utils.ts` | Helper functions for this feature | `formatLessonDuration()` |
 | `types.ts` | TypeScript types/interfaces | `Course`, `Lesson` |
