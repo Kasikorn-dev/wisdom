@@ -8,6 +8,8 @@
 		"check": "biome check .",
 		"check:unsafe": "biome check --write --unsafe .",
 		"check:write": "biome check --write .",
+		"setup:sup": "copy .env.dev.supabase .env",
+		"setup:local": "copy .env.dev.local .env",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:push": "drizzle-kit push",

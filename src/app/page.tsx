@@ -1,6 +1,5 @@
-import { serverCaller } from "@/trpc/server";
+import { HomeHero } from "@/features/home/components";
 
-export default async function Home() {
-	const hello = await serverCaller.hello();
-	return <div>{hello}</div>;
+export default function Home() {
+	return <HomeHero />;
 }

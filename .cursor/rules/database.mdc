@@ -14,7 +14,7 @@ This project uses **Drizzle ORM** with **Supabase** (PostgreSQL).
 src/server/db/
 ├── index.ts          # db instance, exports drizzle client with schema
 ├── lib/
-│   └── utils.ts      # createTable, baseTimestamps, baseSchema helpers
+│   └── utils.ts      # createTable, baseSchema helpers
 └── schemas/
     ├── index.ts      # Re-exports all schemas (used by db index)
     └── users.ts      # One file per domain/entity
@@ -23,19 +23,19 @@ src/server/db/
 ## Adding a New Schema
 
 1. Create `src/server/db/schemas/<domain>.ts` (e.g. `courses.ts`)
-2. Use `createTable` from `../lib/utils` — it supports `baseTimestamps` and RLS policies
+2. Use `createTable` from `../lib/utils` — it supports `baseSchema` and RLS policies
 3. Export the schema in `src/server/db/schemas/index.ts`
 
 **Example — new schema file:**
 ```ts
 // src/server/db/schemas/courses.ts
 import { uuid, varchar } from "drizzle-orm/pg-core";
-import { baseTimestamps, createTable } from "../lib/utils";
+import { baseSchema, createTable } from "../lib/utils";
 
 export const courses = createTable("course", {
   id: uuid("id").primaryKey().notNull(),
   name: varchar("name", { length: 255 }).notNull(),
-  ...baseTimestamps,
+  ...baseSchema,
 });
 ```
 
@@ -49,8 +49,7 @@ export * from "./courses";
 ## Using `createTable` and Helpers
 
 - `createTable(name, columns, tableConfig?)` — wrapper around `pgTable` with project conventions
-- `baseTimestamps` — `createdAt`, `updatedAt` columns
-- `baseSchema` — timestamps + `createdBy`, `updatedBy` (for audit)
+- `baseSchema` — `createdAt`, `updatedAt`, `createdBy`, `updatedBy` columns
 
 ## Commands
 

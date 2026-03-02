@@ -2,12 +2,11 @@ import "@/styles/globals.css";
 
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-
-import { TRPCReactProvider } from "@/trpc/react";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Footer, Navbar } from "@/components/layout";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import { ModeToggle } from "@/components/ui/mode-toggle";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { TRPCReactProvider } from "@/trpc/react";
 
 export const metadata: Metadata = {
 	title: "Wisdom Education Platform",
@@ -25,17 +24,18 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html className={`${geist.variable}`} lang="en" suppressHydrationWarning>
-			<body>
+			<body className="flex min-h-screen flex-col">
 				<TRPCReactProvider>
 					<ThemeProvider
 						attribute="class"
 						defaultTheme="system"
-						enableSystem
 						disableTransitionOnChange
+						enableSystem
 					>
 						<TooltipProvider>
-							<ModeToggle />
-							{children}
+							<Navbar />
+							<main className="flex-1">{children}</main>
+							<Footer />
 							<Toaster />
 						</TooltipProvider>
 					</ThemeProvider>

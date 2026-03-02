@@ -32,12 +32,12 @@ Create `src/server/db/schemas/<domain>.ts`
 
 ```ts
 import { uuid, varchar } from "drizzle-orm/pg-core";
-import { baseTimestamps, createTable } from "../lib/utils";
+import { baseSchema, createTable } from "../lib/utils";
 
 export const <tableName> = createTable("<table_name>", {
   id: uuid("id").primaryKey().notNull(),
   name: varchar("name", { length: 255 }).notNull(),
-  ...baseTimestamps,
+  ...baseSchema,
 });
 ```
 
@@ -45,13 +45,13 @@ export const <tableName> = createTable("<table_name>", {
 
 ```ts
 import { uuid, varchar, text } from "drizzle-orm/pg-core";
-import { baseTimestamps, createTable } from "../lib/utils";
+import { baseSchema, createTable } from "../lib/utils";
 
 export const courses = createTable("course", {
   id: uuid("id").primaryKey().notNull(),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
-  ...baseTimestamps,
+  ...baseSchema,
 });
 ```
 
@@ -62,8 +62,7 @@ From `../lib/utils`:
 | Helper | Purpose |
 |--------|---------|
 | `createTable` | Creates table with project conventions |
-| `baseTimestamps` | Adds `createdAt`, `updatedAt` columns |
-| `baseSchema` | Adds timestamps + `createdBy`, `updatedBy` (for audit) |
+| `baseSchema` | Adds `createdAt`, `updatedAt`, `createdBy`, `updatedBy` columns |
 
 **Common column types:**
 - `uuid("id")` — UUID primary key
@@ -100,7 +99,7 @@ pnpm db:push
 
 - [ ] Schema file: `src/server/db/schemas/<domain>.ts`
 - [ ] Using `createTable` from `../lib/utils`
-- [ ] `baseTimestamps` added (or `baseSchema` if audit needed)
+- [ ] `baseSchema` added
 - [ ] Exported in `schemas/index.ts`
 - [ ] Run `pnpm db:generate` and `pnpm db:migrate`
 
@@ -112,13 +111,13 @@ pnpm db:push
 
 ```ts
 import { uuid, varchar, text } from "drizzle-orm/pg-core";
-import { baseTimestamps, createTable } from "../lib/utils";
+import { baseSchema, createTable } from "../lib/utils";
 
 export const courses = createTable("course", {
   id: uuid("id").primaryKey().notNull(),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
-  ...baseTimestamps,
+  ...baseSchema,
 });
 ```
 
@@ -143,14 +142,14 @@ If you need Row Level Security (RLS):
 ```ts
 import { sql } from "drizzle-orm";
 import { pgPolicy, uuid, varchar } from "drizzle-orm/pg-core";
-import { baseTimestamps, createTable } from "../lib/utils";
+import { baseSchema, createTable } from "../lib/utils";
 
 export const courses = createTable(
   "course",
   {
     id: uuid("id").primaryKey().notNull(),
     name: varchar("name", { length: 255 }).notNull(),
-    ...baseTimestamps,
+    ...baseSchema,
   },
   (t) => [
     pgPolicy("courses_read_policy", {
