@@ -23,14 +23,14 @@ src/server/db/
 ## Adding a New Schema
 
 1. Create `src/server/db/schemas/<domain>.ts` (e.g. `courses.ts`)
-2. Use `createTable` from `../lib/utils` — it supports `baseSchema` and RLS policies
+2. Use `createTable` from `@/server/db/lib/util` — it supports `baseSchema` and RLS policies
 3. Export the schema in `src/server/db/schemas/index.ts`
 
 **Example — new schema file:**
 ```ts
 // src/server/db/schemas/courses.ts
 import { uuid, varchar } from "drizzle-orm/pg-core";
-import { baseSchema, createTable } from "../lib/utils";
+import { baseSchema, createTable } from "@/server/db/lib/utils";
 
 export const courses = createTable("course", {
   id: uuid("id").primaryKey().notNull(),
@@ -42,8 +42,8 @@ export const courses = createTable("course", {
 **Example — register in index:**
 ```ts
 // src/server/db/schemas/index.ts
-export * from "./users";
-export * from "./courses";
+export * from "@/server/db/schemas/users";
+export * from "@/server/db/schemas/courses";
 ```
 
 ## Using `createTable` and Helpers

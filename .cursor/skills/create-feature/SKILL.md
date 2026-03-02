@@ -30,24 +30,25 @@ Create this structure under `src/features/<feature-name>/`:
 
 ```
 src/features/<feature-name>/
-├── components/          # UI components
+├── components/
+│   ├── index.ts         # Export barrel — re-exports sub-components
+│   └── course-list.tsx
 ├── hooks/               # Custom hooks
+├── index.tsx            # Compose — imports components, hooks, types → CoursePage
 ├── types.ts             # TypeScript types for this feature
 └── utils.ts             # Helper functions for this feature
 ```
 
-**What each part is for:**
+**Two `index` files, different roles:**
 
-| Folder/File | Purpose | When to add |
-|-------------|---------|-------------|
-| `components/` | Feature-specific UI | Always create |
-| `hooks/` | Logic hooks (useState, data fetching) | Always create |
-| `types.ts` | Interfaces, types | Add when you have data shapes |
-| `utils.ts` | Helper functions | Add when you have reusable logic |
+| File | Role | Purpose |
+|------|------|---------|
+| `components/index.ts` | **Export** | Barrel — re-exports all sub-components |
+| `features/<name>/index.tsx` | **Compose** | Imports from components, hooks, types → assembles one finished component (e.g. CoursePage) for the app |
 
-### Step 3: Create the Main Component
+### Step 3: Create Sub-Components + `components/index.ts`
 
-Create at least one component in `components/`. Use **kebab-case** for file names.
+Create sub-components in `components/`. Use **kebab-case** for file names. Add `components/index.ts` to **export** them.
 
 **Example:** `src/features/course/components/course-list.tsx`
 
@@ -64,31 +65,52 @@ export function CourseList() {
 }
 ```
 
-**Naming:** Component = PascalCase (`CourseList`), file = kebab-case (`course-list.tsx`)
+**Example:** `src/features/course/components/index.ts` — Export barrel
 
-### Step 4: Create the Page Route
+```ts
+export { CourseList } from "@/features/course/components/course-list";
+export { CourseCard } from "@/features/course/components/course-card";  // future
+```
 
-Create a page in `src/app/` that **imports and renders** the feature component. Keep the page thin.
+### Step 4: Create Feature Root `index.tsx` (Compose)
 
-**Example:** `src/app/courses/page.tsx`
+Create `features/<name>/index.tsx` that **imports** from components/index, hooks, types and **composes** them into one finished component. This is the single component the app uses.
+
+**Example:** `src/features/course/index.tsx`
 
 ```tsx
-import { CourseList } from "@/features/course/components/course-list";
+import { CourseList } from "@/features/course/components";
+// import { useCourse } from "@/features/course/hooks";  // if needed
 
-export default function CoursesPage() {
+export function CoursePage() {
   return (
     <main className="container py-8">
       <CourseList />
+      {/* Add other sections as needed */}
     </main>
   );
 }
 ```
 
-**Rules:**
-- Page only imports and composes — no complex logic
-- Import from `@/features/<name>/components/`
+### Step 5: Create the Page Route
 
-### Step 5: Add Types (if needed)
+Create a page in `src/app/` that **imports and renders** the composed component from the feature root. Keep the page thin.
+
+**Example:** `src/app/courses/page.tsx`
+
+```tsx
+import { CoursePage } from "@/features/course";
+
+export default function CoursesPage() {
+  return <CoursePage />;
+}
+```
+
+**Rules:**
+- Page only imports and renders — no complex logic
+- Import from `@/features/<name>` (feature root) — NOT from `@/features/<name>/components`
+
+### Step 6: Add Types (if needed)
 
 **Example:** `src/features/course/types.ts`
 
@@ -100,7 +122,7 @@ export interface Course {
 }
 ```
 
-### Step 6: Add tRPC / Data (if needed)
+### Step 7: Add tRPC / Data (if needed)
 
 If the feature needs API data, use the `add-trpc-router` skill to create the API. Then:
 - Client components: `api.course.list.useQuery()`
@@ -112,9 +134,11 @@ If the feature needs API data, use the `add-trpc-router` skill to create the API
 
 - [ ] Feature folder: `src/features/<feature-name>/`
 - [ ] `components/` and `hooks/` folders exist
-- [ ] At least one component created
+- [ ] At least one sub-component created in `components/`
+- [ ] `components/index.ts` exports all sub-components (barrel)
+- [ ] Feature root `index.tsx` composes (imports from components, hooks, types)
 - [ ] Page in `src/app/<route>/page.tsx`
-- [ ] Page imports from `@/features/<name>/`
+- [ ] Page imports from `@/features/<name>` (feature root)
 - [ ] `types.ts` and `utils.ts` added if needed
 
 ---
@@ -124,8 +148,10 @@ If the feature needs API data, use the `add-trpc-router` skill to create the API
 ```
 src/features/course/
 ├── components/
+│   ├── index.ts         # Export barrel
 │   └── course-list.tsx
 ├── hooks/
+├── index.tsx            # Compose → CoursePage
 ├── types.ts
 └── utils.ts
 
@@ -138,5 +164,6 @@ src/app/courses/
 ## Common Mistakes to Avoid
 
 1. **Putting logic in the page** — Keep `page.tsx` thin; put logic in components or hooks
-2. **Wrong import path** — Use `@/features/<name>/` not `@/app/` or relative paths
-3. **Shared components in feature** — If used by multiple features → `src/components/`. Feature-only → `src/features/<name>/components/`
+2. **Wrong import path** — App imports from `@/features/<name>` (feature root), NOT from `@/features/<name>/components`
+3. **Confusing the two indices** — `components/index.ts` = export barrel; `features/<name>/index.tsx` = compose (import + assemble)
+4. **Shared components in feature** — If used by multiple features → `src/components/`. Feature-only → `src/features/<name>/components/`

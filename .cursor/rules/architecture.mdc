@@ -41,32 +41,70 @@ Put all feature-specific code here. Each feature folder typically contains:
 ```
 src/features/course/
 ├── components/
+│   ├── index.ts         # Export barrel — re-exports all sub-components
 │   ├── course-card.tsx
 │   └── lesson-list.tsx
 ├── hooks/
 │   └── use-course-progress.ts
+├── index.tsx            # Compose — imports components, hooks, types → CoursePage
 ├── utils.ts
 └── types.ts
 ```
 
+**Two `index` files, different roles:**
+
+| File | Role | Purpose |
+|------|------|---------|
+| `components/index.ts` | **Export** | Barrel file — re-exports all sub-components for internal use |
+| `features/<name>/index.tsx` | **Compose** | Imports from components, hooks, types → assembles one **finished component** (e.g. HomePage) that the app uses |
+
+**App imports only from feature root** — `@/features/home` exports `HomePage`. Never import from `@/features/home/components` in app.
+
+**Import rule:** Use `@/` path alias only — no relative imports (`./`, `../`).
+
+```tsx
+// src/features/home/components/index.ts — Export barrel
+export { HomeHero } from "@/features/home/components/home-hero";
+export { HomeFeatures } from "@/features/home/components/home-features";  // future
+```
+
+```tsx
+// src/features/home/index.tsx — Compose (import + assemble)
+import { HomeHero } from "@/features/home/components";
+// import { useHome } from "@/features/home/hooks";  // if needed
+// import type { HomeSection } from "@/features/home/types";  // if needed
+
+export function HomePage() {
+  return (
+    <div>
+      <HomeHero />
+      {/* Add other sections, hooks, etc. */}
+    </div>
+  );
+}
+```
+
 ### 2. `src/app/` — Routing Only
 
-- `page.tsx` files should **import and render** components from `src/features/`
+- `page.tsx` files should **import and render** the composed component from `src/features/<name>`
 - Do NOT put complex logic or large UI directly in `app/`
-- Keep pages thin — they compose feature components
+- Keep pages thin — they render the feature's composed component
 
 **Good:**
 ```tsx
 // src/app/courses/page.tsx
-import { CourseList } from "@/features/course/components/course-list";
+import { CoursePage } from "@/features/course";
 
 export default function CoursesPage() {
-  return <CourseList />;
+  return <CoursePage />;
 }
 ```
 
 **Bad:**
 ```tsx
+// Importing from components/ — use feature root instead
+import { CourseList } from "@/features/course/components/course-list";
+
 // Too much logic in page
 export default function CoursesPage() {
   const [courses, setCourses] = useState([]);

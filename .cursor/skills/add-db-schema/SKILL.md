@@ -32,7 +32,7 @@ Create `src/server/db/schemas/<domain>.ts`
 
 ```ts
 import { uuid, varchar } from "drizzle-orm/pg-core";
-import { baseSchema, createTable } from "../lib/utils";
+import { baseSchema, createTable } from "@/server/db/lib/utils";
 
 export const <tableName> = createTable("<table_name>", {
   id: uuid("id").primaryKey().notNull(),
@@ -57,7 +57,7 @@ export const courses = createTable("course", {
 
 ### Step 3: Use Available Helpers
 
-From `../lib/utils`:
+From `@/server/db/lib/utils`:
 
 | Helper | Purpose |
 |--------|---------|
@@ -98,7 +98,7 @@ pnpm db:push
 ## Checklist
 
 - [ ] Schema file: `src/server/db/schemas/<domain>.ts`
-- [ ] Using `createTable` from `../lib/utils`
+- [ ] Using `createTable` from `@/server/db/lib/utils`
 - [ ] `baseSchema` added
 - [ ] Exported in `schemas/index.ts`
 - [ ] Run `pnpm db:generate` and `pnpm db:migrate`
@@ -111,7 +111,7 @@ pnpm db:push
 
 ```ts
 import { uuid, varchar, text } from "drizzle-orm/pg-core";
-import { baseSchema, createTable } from "../lib/utils";
+import { baseSchema, createTable } from "@/server/db/lib/utils";
 
 export const courses = createTable("course", {
   id: uuid("id").primaryKey().notNull(),
@@ -123,8 +123,8 @@ export const courses = createTable("course", {
 
 **schemas/index.ts:**
 ```ts
-export * from "./users";
-export * from "./courses";
+export * from "@/server/db/schemas/users";
+export * from "@/server/db/schemas/courses";
 ```
 
 **Then run:**
@@ -142,7 +142,7 @@ If you need Row Level Security (RLS):
 ```ts
 import { sql } from "drizzle-orm";
 import { pgPolicy, uuid, varchar } from "drizzle-orm/pg-core";
-import { baseSchema, createTable } from "../lib/utils";
+import { baseSchema, createTable } from "@/server/db/lib/utils";
 
 export const courses = createTable(
   "course",
@@ -166,7 +166,7 @@ export const courses = createTable(
 
 ## Common Mistakes to Avoid
 
-1. **Using pgTable directly** — Use `createTable` from `../lib/utils` for consistency
+1. **Using pgTable directly** — Use `createTable` from `@/server/db/lib/utils` for consistency
 2. **Forgetting to export** — Must add to `schemas/index.ts`
 3. **Skipping migration** — Run `pnpm db:generate` and `pnpm db:migrate` after schema changes
-4. **Wrong import path** — Import from `../lib/utils` (relative to schemas folder)
+4. **Wrong import path** — Use `@/server/db/lib/utils` (no relative imports)

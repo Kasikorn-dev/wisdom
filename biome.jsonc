@@ -24,6 +24,19 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"style": {
+				"noRestrictedImports": {
+					"level": "error",
+					"options": {
+						"patterns": [
+							{
+								"group": ["./*", "../*"],
+								"message": "Use @/ path alias instead of relative imports"
+							}
+						]
+					}
+				}
+			},
 			"nursery": {
 				"useSortedClasses": {
 					"level": "warn",
