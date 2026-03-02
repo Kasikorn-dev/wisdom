@@ -1,0 +1,93 @@
+---
+description: Feature-based architecture and directory structure
+alwaysApply: true
+---
+
+# Feature-Based Architecture
+
+This project uses **Feature-Based Architecture** — code is organized by feature/domain, not by technical layer (e.g. "all components together").
+
+## Why Feature-Based?
+
+- **Colocation**: Related code lives together (components, hooks, types for one feature)
+- **Scalability**: Easy to add/remove features without touching unrelated code
+- **Clarity**: Clear ownership — "course" feature owns its UI, logic, and types
+
+## Directory Structure
+
+```
+src/
+├── app/              # Next.js App Router — routing ONLY, minimal logic
+├── features/         # Business logic + feature-specific UI (one folder per feature)
+├── components/       # Shared UI used across multiple features
+├── lib/              # Shared utilities, helpers, non-feature-specific code
+└── server/           # Database, tRPC, API setup
+```
+
+## Rules by Directory
+
+### 1. `src/features/<feature-name>/`
+
+Put all feature-specific code here. Each feature folder typically contains:
+
+| Subfolder/File | Purpose | Example |
+|---------------|---------|---------|
+| `components/` | UI components used only in this feature | `CourseCard.tsx`, `LessonList.tsx` |
+| `hooks/` | Custom hooks for this feature's logic | `useCourseProgress.ts` |
+| `utils.ts` | Helper functions for this feature | `formatLessonDuration()` |
+| `types.ts` | TypeScript types/interfaces | `Course`, `Lesson` |
+
+**Example structure:**
+```
+src/features/course/
+├── components/
+│   ├── course-card.tsx
+│   └── lesson-list.tsx
+├── hooks/
+│   └── use-course-progress.ts
+├── utils.ts
+└── types.ts
+```
+
+### 2. `src/app/` — Routing Only
+
+- `page.tsx` files should **import and render** components from `src/features/`
+- Do NOT put complex logic or large UI directly in `app/`
+- Keep pages thin — they compose feature components
+
+**Good:**
+```tsx
+// src/app/courses/page.tsx
+import { CourseList } from "@/features/course/components/course-list";
+
+export default function CoursesPage() {
+  return <CourseList />;
+}
+```
+
+**Bad:**
+```tsx
+// Too much logic in page
+export default function CoursesPage() {
+  const [courses, setCourses] = useState([]);
+  useEffect(() => { /* fetch */ }, []);
+  return <div>{/* 100 lines of JSX */}</div>;
+}
+```
+
+### 3. `src/components/` — Shared UI
+
+- Generic, reusable components used by **multiple features**
+- Examples: `Button`, `Modal`, `DataTable`
+- If a component is only used in one feature → put it in `src/features/<name>/components/`
+
+### 4. `src/lib/` — Shared Utilities
+
+- Helper functions, formatters, constants not tied to a specific feature
+- Examples: `formatDate`, `cn` (classnames utility), API clients
+
+### 5. `src/server/` — Server Logic
+
+- Database schema and connection
+- tRPC routers and context
+- Server-only code

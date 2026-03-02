@@ -1,0 +1,43 @@
+---
+description: Wisdom project — tech stack and project identity
+alwaysApply: true
+---
+
+# Wisdom Project
+
+An **education platform** built with modern web technologies.
+
+## Tech Stack
+
+| Layer | Technology | Notes |
+|-------|------------|-------|
+| Framework | Next.js 15 | App Router, Turbopack |
+| Language | TypeScript 5 | Strict mode enabled |
+| API | tRPC v11 | Type-safe API layer |
+| Data Fetching | TanStack Query v5 | React Query for client-side data |
+| ORM | Drizzle ORM v0.41 | With drizzle-kit for migrations |
+| Database | Supabase | PostgreSQL hosted |
+| Auth | Supabase Auth | Sign in, sign up, sessions |
+| UI | React 19 + shadcn/ui | Component library |
+| Styling | Tailwind CSS v4 | With PostCSS |
+| Validation | Zod v3 | Schema validation |
+| Serialization | SuperJSON | Dates, Maps, etc. in tRPC |
+| Linter/Formatter | Biome v2 | Fast, all-in-one |
+| Package Manager | pnpm | Fast, disk-efficient |
+| Env Validation | @t3-oss/env-nextjs | Type-safe env vars |
+
+## Path Alias
+
+- `@/` maps to `src/`
+- Example: `import { db } from "@/server/db"`
+
+## Common Commands
+
+| Command | Description |
+|---------|-------------|
+| `pnpm install` | Install dependencies |
+| `pnpm dev` | Start dev server |
+| `pnpm build` | Production build |
+| `pnpm db:migrate` | Run database migrations |
+| `pnpm db:push` | Push schema to database |
+| `pnpm db:generate` | Generate migration from schema |

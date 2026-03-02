@@ -1,0 +1,73 @@
+---
+description: tRPC data fetching — Server vs Client imports
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+# tRPC Data Fetching
+
+tRPC provides two different ways to call your API, depending on whether you're in a **Server Component** or **Client Component**. Using the wrong one will cause runtime errors.
+
+## Rule: Use the Correct Import for Your Context
+
+| Context | Import From | How It Works |
+|---------|-------------|--------------|
+| Server Component / Server Action / API Route | `@/trpc/server` | Direct function call, no HTTP, no React hooks |
+| Client Component | `@/trpc/react` | React hooks, calls go over HTTP to `/api/trpc` |
+
+## Server Components — `serverCaller`
+
+Use when you're in a Server Component, Server Action, or API route. This performs a **direct function call** — no HTTP request, no network latency.
+
+```tsx
+// src/app/courses/page.tsx (Server Component — no "use client")
+import { serverCaller } from "@/trpc/server";
+
+export default async function CoursesPage() {
+  const courses = await serverCaller.course.list();
+  return <CourseList initialData={courses} />;
+}
+```
+
+```ts
+// In a Server Action
+import { serverCaller } from "@/trpc/server";
+
+export async function createCourse(formData: FormData) {
+  "use server";
+  await serverCaller.course.create({ name: formData.get("name") as string });
+}
+```
+
+## Client Components — `api` (React Hooks)
+
+Use when you're in a Client Component (has `"use client"`). This uses React Query hooks and makes HTTP requests.
+
+```tsx
+"use client";
+
+import { api } from "@/trpc/react";
+
+export function CourseList() {
+  const { data, isLoading, error } = api.course.list.useQuery();
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  return <ul>{data?.map((c) => <li key={c.id}>{c.name}</li>)}</ul>;
+}
+```
+
+**Mutations:**
+```tsx
+const utils = api.useUtils();
+const createCourse = api.course.create.useMutation({
+  onSuccess: () => utils.course.list.invalidate(),
+});
+```
+
+## ⚠️ Do NOT Mix
+
+| ❌ Wrong | Why |
+|----------|-----|
+| `serverCaller` in a Client Component | `serverCaller` runs on server; Client Components run in browser |
+| `api` in a Server Component | Hooks only work in Client Components |

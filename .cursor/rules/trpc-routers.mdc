@@ -1,0 +1,84 @@
+---
+description: tRPC routers — structure and how to add new API endpoints
+globs: src/server/api/**/*.ts
+alwaysApply: false
+---
+
+# tRPC Routers
+
+This project uses **tRPC** for type-safe API endpoints. Routers are organized by domain.
+
+## Directory Structure
+
+```
+src/server/api/
+├── root.ts       # appRouter — combines all routers
+├── trpc.ts       # createTRPCRouter, publicProcedure, context, middleware
+└── routers/
+    ├── post.ts
+    └── <domain>.ts   # One file per domain (e.g. course.ts, user.ts)
+```
+
+## Adding a New Router
+
+### Step 1: Create the router file
+
+```ts
+// src/server/api/routers/course.ts
+import { z } from "zod";
+import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { courses } from "@/server/db/schemas";
+
+export const courseRouter = createTRPCRouter({
+  list: publicProcedure.query(async ({ ctx }) => {
+    return ctx.db.query.courses.findMany();
+  }),
+
+  create: publicProcedure
+    .input(z.object({ name: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(courses).values({ name: input.name });
+    }),
+});
+```
+
+### Step 2: Register in root.ts
+
+```ts
+// src/server/api/root.ts
+import { courseRouter } from "@/server/api/routers/course";
+
+export const appRouter = createTRPCRouter({
+  post: postRouter,
+  course: courseRouter,  // Add here
+});
+```
+
+## Input Validation (Required)
+
+Every procedure that accepts input **must** use `.input()` with a Zod schema. This prevents invalid data and gives type safety on the client.
+
+**✅ Correct:**
+```ts
+create: publicProcedure
+  .input(z.object({ name: z.string().min(1), email: z.string().email() }))
+  .mutation(async ({ ctx, input }) => {
+    // input is typed and validated
+  }),
+```
+
+**❌ Wrong:**
+```ts
+create: publicProcedure.mutation(async ({ ctx, input }) => {
+  // input is undefined — no validation!
+}),
+```
+
+## Procedure Types
+
+| Type | Usage |
+|------|-------|
+| `publicProcedure` | No auth required — anyone can call (current setup) |
+| `protectedProcedure` | Requires authenticated user — add when you implement auth |
+
+When you add auth, create `protectedProcedure` in `trpc.ts` that checks `ctx.user` and use it for protected routes.

@@ -1,0 +1,61 @@
+---
+description: Database — Drizzle ORM + Supabase
+globs: src/server/**/*.ts
+alwaysApply: false
+---
+
+# Database (Drizzle ORM + Supabase)
+
+This project uses **Drizzle ORM** with **Supabase** (PostgreSQL).
+
+## Directory Structure: `src/server/db/`
+
+```
+src/server/db/
+├── index.ts          # db instance, exports drizzle client with schema
+├── lib/
+│   └── utils.ts      # createTable, baseTimestamps, baseSchema helpers
+└── schemas/
+    ├── index.ts      # Re-exports all schemas (used by db index)
+    └── users.ts      # One file per domain/entity
+```
+
+## Adding a New Schema
+
+1. Create `src/server/db/schemas/<domain>.ts` (e.g. `courses.ts`)
+2. Use `createTable` from `../lib/utils` — it supports `baseTimestamps` and RLS policies
+3. Export the schema in `src/server/db/schemas/index.ts`
+
+**Example — new schema file:**
+```ts
+// src/server/db/schemas/courses.ts
+import { uuid, varchar } from "drizzle-orm/pg-core";
+import { baseTimestamps, createTable } from "../lib/utils";
+
+export const courses = createTable("course", {
+  id: uuid("id").primaryKey().notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  ...baseTimestamps,
+});
+```
+
+**Example — register in index:**
+```ts
+// src/server/db/schemas/index.ts
+export * from "./users";
+export * from "./courses";
+```
+
+## Using `createTable` and Helpers
+
+- `createTable(name, columns, tableConfig?)` — wrapper around `pgTable` with project conventions
+- `baseTimestamps` — `createdAt`, `updatedAt` columns
+- `baseSchema` — timestamps + `createdBy`, `updatedBy` (for audit)
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `pnpm db:migrate` | Run pending migrations |
+| `pnpm db:push` | Push schema changes to database (dev/prototyping) |
+| `pnpm db:generate` | Generate migration file from schema changes |
