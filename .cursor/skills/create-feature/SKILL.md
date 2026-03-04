@@ -46,6 +46,15 @@ src/features/<feature-name>/
 | `components/index.ts` | **Export** | Barrel — re-exports all sub-components |
 | `features/<name>/index.tsx` | **Compose** | Imports from components, hooks, types → assembles one finished component (e.g. CoursePage) for the app |
 
+## Where to Put Shared Components
+
+| Location | Use when |
+|----------|----------|
+| `src/features/<name>/components/` | Used in **one feature only** |
+| `src/components/shared/` | Used by **2+ features** (e.g. ConfirmDialog, EmptyState) |
+| `src/components/layout/` | Page shell (Navbar, Footer, Sidebar) |
+| `src/components/ui/` | Add via shadcn CLI — low-level primitives |
+
 ### Step 3: Create Sub-Components + `components/index.ts`
 
 Create sub-components in `components/`. Use **kebab-case** for file names. Add `components/index.ts` to **export** them.
@@ -166,4 +175,4 @@ src/app/courses/
 1. **Putting logic in the page** — Keep `page.tsx` thin; put logic in components or hooks
 2. **Wrong import path** — App imports from `@/features/<name>` (feature root), NOT from `@/features/<name>/components`
 3. **Confusing the two indices** — `components/index.ts` = export barrel; `features/<name>/index.tsx` = compose (import + assemble)
-4. **Shared components in feature** — If used by multiple features → `src/components/`. Feature-only → `src/features/<name>/components/`
+4. **Shared components in feature** — If used by 2+ features → `src/components/shared/`. Feature-only → `src/features/<name>/components/`. Layout → `src/components/layout/`. Primitives → `src/components/ui/`

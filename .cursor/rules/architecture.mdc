@@ -20,6 +20,9 @@ src/
 ├── app/              # Next.js App Router — routing ONLY, minimal logic
 ├── features/         # Business logic + feature-specific UI (one folder per feature)
 ├── components/       # Shared UI used across multiple features
+│   ├── layout/       # Page shell (Navbar, Footer, Sidebar)
+│   ├── ui/           # Low-level primitives (shadcn/ui)
+│   └── shared/       # Reusable components used by 2+ features
 ├── lib/              # Shared utilities, helpers, non-feature-specific code
 └── server/           # Database, tRPC, API setup
 ```
@@ -115,9 +118,21 @@ export default function CoursesPage() {
 
 ### 3. `src/components/` — Shared UI
 
-- Generic, reusable components used by **multiple features**
-- Examples: `Button`, `Modal`, `DataTable`
-- If a component is only used in one feature → put it in `src/features/<name>/components/`
+Components used across the app. Three subfolders with different roles:
+
+| Subfolder | Purpose | Examples |
+|-----------|---------|----------|
+| **layout/** | Page shell — defines where content goes | Navbar, Footer, Sidebar |
+| **ui/** | Low-level primitives (shadcn/ui) | Button, Input, Dialog, Card |
+| **shared/** | Reusable components used by multiple features | ConfirmDialog, EmptyState, ErrorBoundary |
+
+**When to use which:**
+
+- **layout/** — Structural elements that wrap pages (header, footer, sidebar)
+- **ui/** — Base building blocks; add via `pnpm dlx shadcn@latest add <name>`
+- **shared/** — Composed components used by 2+ features; not layout, not a primitive
+
+**Rule:** If a component is used in **one feature only** → put it in `src/features/<name>/components/`
 
 ### 4. `src/lib/` — Shared Utilities
 

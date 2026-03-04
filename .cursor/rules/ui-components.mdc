@@ -27,7 +27,9 @@ The CLI will prompt for style (default/new-york) and add the component to your p
 ## File Location
 
 - Installed components live in: `src/components/ui/`
-- Import from: `@/components/ui/<component-name>`
+- Import from: `@/components/ui` (barrel) or `@/components/ui/<component-name>`
+
+**Note:** `ui/` = low-level primitives. For layout (Navbar, Footer) use `@/components/layout`. For shared composed components use `@/components/shared`.
 
 ## Usage Examples
 
