@@ -19,7 +19,7 @@ export const env = createEnv({
 	 * `NEXT_PUBLIC_`.
 	 */
 	client: {
-		NEXT_PUBLIC_SUPABASE_DB_URL: z.string().url(),
+		NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
 		NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string(),
 	},
 
@@ -30,7 +30,7 @@ export const env = createEnv({
 	runtimeEnv: {
 		NODE_ENV: process.env.NODE_ENV,
 		SUPABASE_DB_URL: process.env.SUPABASE_DB_URL,
-		NEXT_PUBLIC_SUPABASE_DB_URL: process.env.NEXT_PUBLIC_SUPABASE_DB_URL,
+		NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
 		NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
 			process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
 	},
