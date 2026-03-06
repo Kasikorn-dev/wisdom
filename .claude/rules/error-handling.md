@@ -1,0 +1,80 @@
+---
+paths:
+  - "**/*.{ts,tsx}"
+---
+
+# Error Handling
+
+This project uses tRPC's built-in error handling for Zod validation errors. For business logic errors, use `TRPCError`.
+
+## tRPC Backend — Throwing Errors
+
+Use `TRPCError` from `@trpc/server` for business logic errors. The error formatter in `trpc.ts` already handles `ZodError` — validation failures are automatically sent to the client.
+
+```ts
+import { TRPCError } from "@trpc/server";
+
+// Unauthorized
+if (!user) {
+  throw new TRPCError({
+    code: "UNAUTHORIZED",
+    message: "You must be logged in to perform this action",
+  });
+}
+
+// Not found
+const course = await ctx.db.query.courses.findFirst({ where: eq(courses.id, input.id) });
+if (!course) {
+  throw new TRPCError({
+    code: "NOT_FOUND",
+    message: "Course not found",
+  });
+}
+
+// Bad request
+if (input.price < 0) {
+  throw new TRPCError({
+    code: "BAD_REQUEST",
+    message: "Price must be positive",
+  });
+}
+```
+
+**Common codes:** `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `BAD_REQUEST`, `INTERNAL_SERVER_ERROR`
+
+## Frontend — Handling Errors
+
+Use `isError`, `error` from tRPC/React Query hooks. Always show errors to the user — don't fail silently.
+
+```tsx
+const { data, isError, error } = api.course.list.useQuery();
+
+if (isError) {
+  return (
+    <Card className="border-destructive">
+      <p className="text-destructive">{error.message}</p>
+    </Card>
+  );
+}
+```
+
+**With toast (Sonner):**
+```tsx
+const createCourse = api.course.create.useMutation({
+  onError: (err) => toast.error(err.message),
+  onSuccess: () => toast.success("Course created"),
+});
+```
+
+## ZodError on Client
+
+When validation fails, the error includes `zodError` with field-level details:
+
+```tsx
+if (error?.data?.zodError) {
+  const { fieldErrors } = error.data.zodError;
+  // fieldErrors: { name: ["Required"], email: ["Invalid email"] }
+}
+```
+
+Use this to show inline validation errors next to form fields.

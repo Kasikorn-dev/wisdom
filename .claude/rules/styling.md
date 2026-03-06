@@ -1,0 +1,69 @@
+---
+paths:
+  - "**/*.{ts,tsx,css}"
+---
+
+# Styling (Tailwind CSS)
+
+This project uses **Tailwind CSS v4** with **PostCSS**. The Biome linter is configured to sort class names in `clsx`, `cva`, and `cn` calls.
+
+## Merging Classes with `cn()`
+
+Use the `cn()` utility from `@/lib/utils` to merge and conditionally apply classes. It handles Tailwind conflicts and overrides.
+
+```tsx
+import { cn } from "@/lib/utils";
+
+// Base + conditional
+<div className={cn("rounded-lg p-4", isActive && "bg-primary text-primary-foreground")} />
+
+// With prop override
+<div className={cn("base-classes", className)} />
+```
+
+## Biome — useSortedClasses
+
+Biome automatically sorts Tailwind classes when you use `clsx`, `cva`, or `cn`. Use these functions when merging classes so the linter can format them correctly.
+
+## Variant-Based Components with `cva`
+
+Use **class-variance-authority** (`cva`) for components with multiple variants (e.g. Button variants: default, destructive, outline).
+
+```tsx
+import { cva } from "class-variance-authority";
+import { cn } from "@/lib/utils";
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center rounded-md font-medium",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline: "border border-input bg-background hover:bg-accent",
+      },
+      size: {
+        sm: "h-8 px-3 text-sm",
+        default: "h-10 px-4",
+        lg: "h-12 px-6 text-lg",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+);
+
+export function Button({ variant, size, className, ...props }) {
+  return (
+    <button className={cn(buttonVariants({ variant, size }), className)} {...props} />
+  );
+}
+```
+
+## Tailwind Guidelines
+
+- Prefer utility classes over custom CSS
+- Use design tokens (e.g. `text-primary`, `bg-muted`) for consistency
+- Avoid arbitrary values (`w-[137px]`) unless necessary — prefer `w-32`, `max-w-md`, etc.
