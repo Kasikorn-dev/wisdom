@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { TRPCReactProvider } from "@/trpc/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
 	title: "Wisdom Education Platform",
@@ -40,6 +41,7 @@ export default function RootLayout({
 						</TooltipProvider>
 					</ThemeProvider>
 				</TRPCReactProvider>
+				<SpeedInsights />
 			</body>
 		</html>
 	);
